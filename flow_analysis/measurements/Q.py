@@ -20,7 +20,7 @@ def Q_mean(flow_ensemble):
         flow_ensemble: A frozen FlowEnsemble instance.
     """
 
-    return basic_bootstrap(flow_ensemble.Q_history())
+    return basic_bootstrap(flow_ensemble.Q_history(), rng=flow_ensemble.get_rng())
 
 
 def chi_top(flow_ensemble):
@@ -35,7 +35,8 @@ def chi_top(flow_ensemble):
 
     metadata = flow_ensemble.metadata
     V = metadata["NX"] * metadata["NY"] * metadata["NZ"] * metadata["NT"]
-    return bootstrap_susceptibility(flow_ensemble.Q_history()) / V
+    unnorm_suscept = bootstrap_susceptibility(flow_ensemble.Q_history(), rng=flow_ensemble.get_rng())
+    return unnorm_suscept / V
 
 
 def flat_bin_Qs(Q_history):

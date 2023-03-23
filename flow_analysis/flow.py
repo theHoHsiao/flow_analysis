@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
+import hashlib
+from os.path import basename
+
 from collections import namedtuple
 
 from numpy import asarray
+from numpy.random import default_rng
 
 class FlowEnsemble:
     """
@@ -11,13 +15,25 @@ class FlowEnsemble:
 
     _frozen = False
 
-    def __init__(self):
+    def __init__(self, filename):
         self.trajectories = []
         self.Eps = []
         self.Ecs = []
         self.times = None
         self.Qs = []
         self.metadata = {}
+        self.filename = filename
+
+    def get_rng(self):
+        """
+        Use the base filename of the input file to generate
+        a consistent for generating random numbers.
+        """
+
+        filename = basename(self.filename)
+        filename_hash = hashlib.md5(filename.encode("utf8")).digest()
+        seed = abs(int.from_bytes(filename_hash, "big"))
+        return default_rng(seed)
 
     def append(self, flow):
         """

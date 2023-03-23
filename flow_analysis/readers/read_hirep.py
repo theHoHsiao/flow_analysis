@@ -26,7 +26,7 @@ def add_metadata(metadata, line_contents):
 
 @lru_cache(maxsize=8)
 def read_flows_hirep(filename):
-    flows = FlowEnsemble()
+    flows = FlowEnsemble(filename)
     flow = None
 
     with open(filename) as f:
