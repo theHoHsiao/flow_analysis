@@ -87,6 +87,40 @@ class FlowEnsemble:
         t_index = (self.times <= t).nonzero()[0][-1]
         return self.Qs[:, t_index]
 
+    @property
+    def is_adaptive(self):
+        tolerance = 1e-5
+        return (self.hs.max() - self.hs.min()) / self.hs.mean() > tolerance
+
+    @property
+    def hs(self):
+        times = asarray(self.times)
+        return times[1:] - times[:-1]
+
+    @property
+    def h(self):
+        if self.is_adaptive:
+            raise ValueError("Can't get single step size of adaptive flow.")
+        return self.hs.mean()
+
+    def get_Es(self, operator):
+        """
+        Get the values of the energy density for a given operator.
+
+        Arguments:
+            operator: The operator for E to use.
+                      Valid options are "plaq" and "sym".
+        """
+        if operator == "plaq":
+            return self.Eps
+        elif operator == "sym":
+            return self.Ecs
+        else:
+            raise ValueError(
+                f"Invalid operator {operator}. "
+                'Valid operators are "plaq" and "sym".'
+            )
+
 
 class Flow:
     """
