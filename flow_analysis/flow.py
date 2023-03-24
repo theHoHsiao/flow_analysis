@@ -8,6 +8,7 @@ from collections import namedtuple
 from numpy import asarray
 from numpy.random import default_rng
 
+
 class FlowEnsemble:
     """
     Represents the data from the gradient flow for a single ensemble.
@@ -82,7 +83,7 @@ class FlowEnsemble:
         """
         if t == "L/2":
             L = min(self.metadata["NX"], self.metadata["NY"], self.metadata["NZ"])
-            t = L ** 2 / 32
+            t = L**2 / 32
 
         t_index = (self.times <= t).nonzero()[0][-1]
         return self.Qs[:, t_index]
@@ -117,8 +118,7 @@ class FlowEnsemble:
             return self.Ecs
         else:
             raise ValueError(
-                f"Invalid operator {operator}. "
-                'Valid operators are "plaq" and "sym".'
+                f"Invalid operator {operator}. " 'Valid operators are "plaq" and "sym".'
             )
 
 

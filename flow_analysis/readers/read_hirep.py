@@ -8,15 +8,11 @@ from ..flow import FlowStep, Flow, FlowEnsemble
 
 def add_metadata(metadata, line_contents):
     if (
-            line_contents[0] == "[GEOMETRY][0]Global"
-            or line_contents[0] == "[GEOMETRY_INIT][0]Global"
+        line_contents[0] == "[GEOMETRY][0]Global"
+        or line_contents[0] == "[GEOMETRY_INIT][0]Global"
     ):
         NT, NX, NY, NZ = map(
-            int,
-            match(
-                '([0-9]+)x([0-9]+)x([0-9]+)x([0-9]+)',
-                line_contents[3])
-            .groups()
+            int, match("([0-9]+)x([0-9]+)x([0-9]+)x([0-9]+)", line_contents[3]).groups()
         )
         metadata["NT"] = NT
         metadata["NX"] = NX
@@ -34,21 +30,21 @@ def read_flows_hirep(filename):
             line_contents = line.split()
 
             if (
-                    line_contents[0] == "[IO][0]Configuration"
-                    and line_contents[2] == "read"
+                line_contents[0] == "[IO][0]Configuration"
+                and line_contents[2] == "read"
             ):
                 if flow:
                     flows.append(flow)
 
-                trajectory = int(findall(r'.*n(\d+)]', line_contents[1])[0])
+                trajectory = int(findall(r".*n(\d+)]", line_contents[1])[0])
                 flow = Flow(trajectory)
 
             add_metadata(flows.metadata, line_contents)
 
-            if line_contents[0] != '[WILSONFLOW][0]WF':
+            if line_contents[0] != "[WILSONFLOW][0]WF":
                 continue
 
-            if line_contents[1].startswith('(ncnfg'):
+            if line_contents[1].startswith("(ncnfg"):
                 # There are two versions of HiRep flow logs
                 # One has an extra field that can safely be ignored
                 del line_contents[3]

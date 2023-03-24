@@ -11,6 +11,7 @@ from ..fit_forms import gaussian
 from ..stats.autocorrelation import exp_autocorrelation_fit
 from ..stats.bootstrap import basic_bootstrap, bootstrap_susceptibility
 
+
 def Q_mean(flow_ensemble):
     """
     Compute the mean and bootstrap error Q of an ensemble.
@@ -35,7 +36,9 @@ def chi_top(flow_ensemble):
 
     metadata = flow_ensemble.metadata
     V = metadata["NX"] * metadata["NY"] * metadata["NZ"] * metadata["NT"]
-    unnorm_suscept = bootstrap_susceptibility(flow_ensemble.Q_history(), rng=flow_ensemble.get_rng())
+    unnorm_suscept = bootstrap_susceptibility(
+        flow_ensemble.Q_history(), rng=flow_ensemble.get_rng()
+    )
     return unnorm_suscept / V
 
 

@@ -6,6 +6,7 @@ from numpy import argmax
 
 from ..stats.bootstrap import bootstrap_finalize, sample_bootstrap_1d
 
+
 def _threshold_interpolate(flow_ensemble, values, threshold):
     """
     Find at what time a series of values crosses a given threshold for the first time,
@@ -48,8 +49,10 @@ def bootstrap_ensemble_sqrt_8t0(flow_ensemble, E0, operator="sym"):
                   Default: sym.
     """
 
-    bs_Es = sample_bootstrap_1d(flow_ensemble.get_Es(operator), rng=flow_ensemble.get_rng())
-    t2E = flow_ensemble.times ** 2 * bs_Es
+    bs_Es = sample_bootstrap_1d(
+        flow_ensemble.get_Es(operator), rng=flow_ensemble.get_rng()
+    )
+    t2E = flow_ensemble.times**2 * bs_Es
     return (8 * _threshold_interpolate(flow_ensemble, t2E, E0)) ** 0.5
 
 
@@ -65,7 +68,9 @@ def measure_sqrt_8t0(flow_ensemble, E0, operator="sym"):
                   Default: sym.
     """
 
-    return bootstrap_finalize(bootstrap_ensemble_sqrt_8t0(flow_ensemble, E0, operator=operator))
+    return bootstrap_finalize(
+        bootstrap_ensemble_sqrt_8t0(flow_ensemble, E0, operator=operator)
+    )
 
 
 def bootstrap_ensemble_w0(flow_ensemble, W0, operator="sym"):
@@ -81,10 +86,12 @@ def bootstrap_ensemble_w0(flow_ensemble, W0, operator="sym"):
                   Default: sym.
     """
 
-    bs_Es = sample_bootstrap_1d(flow_ensemble.get_Es(operator), rng=flow_ensemble.get_rng())
+    bs_Es = sample_bootstrap_1d(
+        flow_ensemble.get_Es(operator), rng=flow_ensemble.get_rng()
+    )
     times = flow_ensemble.times
 
-    t2E = times ** 2 * bs_Es
+    t2E = times**2 * bs_Es
     t_dt2E_dt = times[1:-1] * (t2E[:, 2:] - t2E[:, :-2]) / (2 * flow_ensemble.h)
 
     return _threshold_interpolate(flow_ensemble, t_dt2E_dt, W0) ** 0.5
@@ -102,7 +109,9 @@ def measure_w0(flow_ensemble, W0, operator="sym"):
                   Default: sym.
     """
 
-    return bootstrap_finalize(bootstrap_ensemble_w0(flow_ensemble, W0, operator=operator))
+    return bootstrap_finalize(
+        bootstrap_ensemble_w0(flow_ensemble, W0, operator=operator)
+    )
 
 
 def main():

@@ -28,15 +28,14 @@ def bootstrap_susceptibility(values, rng=DEFAULT_RNG):
     samples = []
     for _ in range(BOOTSTRAP_SAMPLE_COUNT):
         current_sample = rng.choice(values, len(values))
-        samples.append(mean(current_sample ** 2) - mean(current_sample) ** 2)
+        samples.append(mean(current_sample**2) - mean(current_sample) ** 2)
     return bootstrap_finalize(samples)
 
 
 def sample_bootstrap_1d(values, rng=DEFAULT_RNG):
     values = asarray(values)
     bootstrap_sample_configurations = rng.integers(
-        values.shape[0],
-        size=(BOOTSTRAP_SAMPLE_COUNT, values.shape[0])
+        values.shape[0], size=(BOOTSTRAP_SAMPLE_COUNT, values.shape[0])
     )
     bootstrap_samples = empty((BOOTSTRAP_SAMPLE_COUNT, values.shape[1]))
     for t_index in range(values.shape[1]):
