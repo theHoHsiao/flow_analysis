@@ -25,6 +25,9 @@ class FlowEnsemble:
         self.metadata = {}
         self.filename = filename
 
+    def __len__(self):
+        return len(self.trajectories)
+
     def get_rng(self):
         """
         Use the base filename of the input file to generate
