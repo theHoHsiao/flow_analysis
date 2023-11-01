@@ -201,8 +201,12 @@ def main():
     threshold = 0.3
     for label, fn in (r"\sqrt{8t_0}", measure_sqrt_8t0), ("w_0", measure_w0):
         for operator in "plaq", "sym":
-            observable = fn(flows, threshold, operator=operator)
-            print(f"threshold = 0.3, {label} ({operator}) = {observable:.02uSL}")
+            try:
+                observable = fn(flows, threshold, operator=operator)
+            except ValueError:
+                print(f"error computing {operator} for {label}")
+            else:
+                print(f"threshold = 0.3, {label} ({operator}) = {observable:.02uSL}")
 
 
 if __name__ == "__main__":
