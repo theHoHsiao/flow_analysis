@@ -24,7 +24,7 @@ def Q_mean(flow_ensemble):
     return basic_bootstrap(flow_ensemble.Q_history(), rng=flow_ensemble.get_rng())
 
 
-def chi_top(flow_ensemble):
+def Q_susceptibility(flow_ensemble):
     """
     Compute the mean and bootstrap error of the naive
     topological susceptibility of an ensemble.
@@ -63,13 +63,13 @@ def flat_bin_Qs(Q_history):
     range_max = -range_min + 1
     Q_range = np.arange(range_min, range_max)
 
-    # Turn sparse Counter object into dense list
-    Q_counts = [Q_bins[Q] for Q in Q_range]
+    # Turn sparse Counter object into dense array
+    Q_counts = np.asarray([Q_bins[Q] for Q in Q_range])
 
     return Q_range, Q_counts
 
 
-def Q_fit(flow_ensemble):
+def Q_fit(flow_ensemble, with_amplitude=False):
     """
     Fit a Gaussian to the topological charge distribution of an ensemble,
     and return its estimated centre and width.
@@ -80,11 +80,14 @@ def Q_fit(flow_ensemble):
     """
 
     Q_range, Q_counts = flat_bin_Qs(flow_ensemble.Q_history())
-    popt, pcov = curve_fit(gaussian, Q_range, Q_counts)
+    popt, pcov = curve_fit(gaussian, Q_range, Q_counts, sigma=(Q_counts + 1) ** 0.5, absolute_sigma=True)
 
     A, Q0, sigma = map(ufloat, popt, pcov.diagonal() ** 0.5)
 
-    return Q0, sigma
+    if with_amplitude:
+        return A, Q0, sigma
+    else:
+        return Q0, sigma
 
 
 def main():
@@ -98,7 +101,7 @@ def main():
     flows = read_flows_hirep(args.filename)
 
     print(f"Q: {Q_mean(flows):.02uSL}")
-    print(f"χ: {chi_top(flows):.02uSL}")
+    print(f"χ: {Q_susceptibility(flows):.02uSL}")
 
     Q0, sigma = Q_fit(flows)
     print(f"Q0: {Q0:.02uSL}; σ: {sigma:.02uSL}")
