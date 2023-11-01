@@ -189,13 +189,14 @@ def measure_w0(flow_ensemble, W0, operator="sym"):
 
 def main():
     from argparse import ArgumentParser
-    from ..readers import read_flows_hirep
+    from ..readers import readers
 
     parser = ArgumentParser()
     parser.add_argument("filename")
+    parser.add_argument("--reader", default=readers["hirep"], type=readers.get)
     args = parser.parse_args()
 
-    flows = read_flows_hirep(args.filename)
+    flows = args.reader(args.filename)
 
     threshold = 0.3
     for label, fn in (r"\sqrt{8t_0}", measure_sqrt_8t0), ("w_0", measure_w0):

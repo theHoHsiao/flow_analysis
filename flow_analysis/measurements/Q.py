@@ -96,9 +96,10 @@ def main():
 
     parser = ArgumentParser()
     parser.add_argument("filename")
+    parser.add_argument("--reader", default=readers["hirep"], type=readers.get)
     args = parser.parse_args()
 
-    flows = read_flows_hirep(args.filename)
+    flows = args.reader(args.filename)
 
     print(f"Q: {Q_mean(flows):.02uSL}")
     print(f"χ: {Q_susceptibility(flows):.02uSL}")
