@@ -27,6 +27,8 @@ def _threshold_interpolate(flow_ensemble, values, threshold):
         bad_ratio = sum(positions == 0) / len(positions)
         warnings.warn(f"{bad_ratio:%} of samples do not reach threshold {threshold}")
         positions = positions[positions > 0]
+        if not positions:
+            raise ValueError("No flows reach threshold.")
 
     T_positions_minus_one = values[tuple(zip(*enumerate(positions - 1)))]
     T_positions = values[tuple(zip(*enumerate(positions)))]

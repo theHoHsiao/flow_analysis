@@ -52,10 +52,10 @@ class FlowEnsemble:
         if self.times is None:
             self.times = flow.times
         elif flow.times != self.times:
-            raise ValueError("Times must match for all flows.")
+            raise ValueError(f"Times must match for all flows. (Failing at trajectory {flow.trajectory})")
 
         if not (len(flow.times) == len(flow.Eps) == len(flow.Ecs) == len(flow.Qs)):
-            raise ValueError("Flow not a consistent length.")
+            raise ValueError(f"Flow for trajectory {flow.trajectory} not a consistent length.")
 
         self.trajectories.append(flow.trajectory)
         self.Eps.append(flow.Eps)
