@@ -2,9 +2,9 @@
 
 import warnings
 
-from numpy import argmax
+from numpy import argmax, nan
 
-from ..stats.bootstrap import bootstrap_finalize, sample_bootstrap_1d
+from ..stats.bootstrap import bootstrap_finalize, bootstrap_finalize_Nd, sample_bootstrap_1d
 
 
 def _threshold_interpolate(flow_ensemble, values, threshold):
@@ -38,6 +38,44 @@ def _threshold_interpolate(flow_ensemble, values, threshold):
     )
 
 
+def compute_t2E_samples(flow_ensemble, operator="sym"):
+    """
+    Generate a set of bootstrap samples for an ensemble, and
+    compute \mathcal{E}(t) = t^2 E for each sample.
+
+    Arguments:
+        flow_ensemble: The FlowEnsemble to evaluate for.
+        operator: The operator for E to use.
+                  Valid options are "plaq" and "sym".
+                  Default: sym.
+    """
+    bs_Es = sample_bootstrap_1d(
+        flow_ensemble.get_Es(operator), rng=flow_ensemble.get_rng()
+    )
+    return flow_ensemble.times**2 * bs_Es
+
+
+def compute_t2E_t(flow_ensemble, operator="sym"):
+    """
+    Compute the mean and error of \mathcal{E}(t) = t^2 E
+    as a function of t.
+
+    Arguments:
+        flow_ensemble: The FlowEnsemble to evaluate for.
+        operator: The operator for E to use.
+                  Valid options are "plaq" and "sym".
+                  Default: sym.
+
+    Returns:
+
+        Array of mean values of the derivative
+        Arrys of errors of the mean of the derivative
+    """
+
+    t2E = compute_t2E_samples(flow_ensemble, operator)
+    return bootstrap_finalize_Nd(t2E, axis=0)
+
+
 def bootstrap_ensemble_sqrt_8t0(flow_ensemble, E0, operator="sym"):
     """
     Generate a set of bootstrap samples for an ensemble, and
@@ -50,11 +88,7 @@ def bootstrap_ensemble_sqrt_8t0(flow_ensemble, E0, operator="sym"):
                   Valid options are "plaq" and "sym".
                   Default: sym.
     """
-
-    bs_Es = sample_bootstrap_1d(
-        flow_ensemble.get_Es(operator), rng=flow_ensemble.get_rng()
-    )
-    t2E = flow_ensemble.times**2 * bs_Es
+    t2E = compute_t2E_samples(flow_ensemble, operator)
     return (8 * _threshold_interpolate(flow_ensemble, t2E, E0)) ** 0.5
 
 
@@ -75,14 +109,13 @@ def measure_sqrt_8t0(flow_ensemble, E0, operator="sym"):
     )
 
 
-def bootstrap_ensemble_w0(flow_ensemble, W0, operator="sym"):
+def compute_wt_samples(flow_ensemble, operator="sym"):
     """
     Generate a set of bootstrap samples for an ensemble, and
-    compute w_0 for each sample.
+    compute the derivative t * d(t^2 E)/dt for each sample.
 
     Arguments:
-        flow_ensemble: The FlowEnsemble to evaluate w0 for.
-        W0: The threshold value W0 to solve for.
+        flow_ensemble: The FlowEnsemble to evaluate for.
         operator: The operator for E to use.
                   Valid options are "plaq" and "sym".
                   Default: sym.
@@ -96,6 +129,44 @@ def bootstrap_ensemble_w0(flow_ensemble, W0, operator="sym"):
     t2E = times**2 * bs_Es
     t_dt2E_dt = times[1:-1] * (t2E[:, 2:] - t2E[:, :-2]) / (2 * flow_ensemble.h)
 
+    return t_dt2E_dt
+
+
+def compute_wt_t(flow_ensemble, operator="sym"):
+    """
+    Compute the mean and error of the derivative t * d(t^2 E)/dt
+    as a function of t.
+
+    Arguments:
+        flow_ensemble: The FlowEnsemble to evaluate w0 for.
+        operator: The operator for E to use.
+                  Valid options are "plaq" and "sym".
+                  Default: sym.
+
+    Returns:
+
+        Array of mean values of the derivative
+        Arrys of errors of the mean of the derivative
+    """
+
+    wt_samples = compute_wt_samples(flow_ensemble, operator="sym")
+    return bootstrap_finalize_Nd(wt_samples, axis=0)
+
+
+def bootstrap_ensemble_w0(flow_ensemble, W0, operator="sym"):
+    """
+    Generate a set of bootstrap samples for an ensemble, and
+    compute w_0 for each sample.
+
+    Arguments:
+        flow_ensemble: The FlowEnsemble to evaluate w0 for.
+        W0: The threshold value W0 to solve for.
+        operator: The operator for E to use.
+                  Valid options are "plaq" and "sym".
+                  Default: sym.
+    """
+
+    t_dt2E_dt = compute_wt_samples(flow_ensemble, operator)
     return _threshold_interpolate(flow_ensemble, t_dt2E_dt, W0) ** 0.5
 
 

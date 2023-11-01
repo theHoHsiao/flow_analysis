@@ -15,6 +15,10 @@ def bootstrap_finalize(samples):
     return ufloat(mean(samples), std(samples))
 
 
+def bootstrap_finalize_Nd(samples, axis=None):
+    return mean(samples, axis=axis), std(samples, axis=axis)
+
+
 def basic_bootstrap(values, rng=DEFAULT_RNG):
     values = asarray(values)
     samples = []
