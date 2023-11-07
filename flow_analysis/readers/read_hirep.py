@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from functools import lru_cache
-from re import findall, match
+from re import match
 
 from ..flow import FlowStep, Flow, FlowEnsemble
 
@@ -20,6 +20,28 @@ def add_metadata(metadata, line_contents):
         metadata["NZ"] = NZ
 
 
+def parse_cfg_filename(filename):
+    """
+    Parse out the run name and trajectory index from a configuration filename.
+
+    Arguments:
+
+        filename: The configuration filename
+
+    Returns:
+
+        run_name: The name of the run/stream
+        cfg_index: The index of the trajectory in the stream
+    """
+
+    matched_filename = match(
+        r".*/([^/]*)_[0-9]+x[0-9]+x[0-9]+x[0-9]+nc[0-9]+(?:r[A-Z]+)?(?:nf[0-9]+)?b[0-9]+\.[0-9]+m-?[0-9]+\.[0-9]+n([0-9]+)",
+        filename,
+    )
+    run_name, cfg_index = matched_filename.groups()
+    return run_name, int(cfg_index)
+
+
 @lru_cache(maxsize=8)
 def read_flows_hirep(filename):
     flows = FlowEnsemble(filename)
@@ -36,8 +58,8 @@ def read_flows_hirep(filename):
                 if flow:
                     flows.append(flow)
 
-                trajectory = int(findall(r".*n(\d+)]", line_contents[1])[0])
-                flow = Flow(trajectory)
+                ensemble, trajectory = parse_cfg_filename(line_contents[1])
+                flow = Flow(trajectory=trajectory, ensemble=ensemble)
 
             add_metadata(flows.metadata, line_contents)
 

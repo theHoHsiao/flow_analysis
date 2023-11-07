@@ -17,6 +17,7 @@ class FlowEnsemble:
     _frozen = False
 
     def __init__(self, filename):
+        self.ensemble_names = []
         self.trajectories = []
         self.Eps = []
         self.Ecs = []
@@ -61,6 +62,7 @@ class FlowEnsemble:
                 f"Flow for trajectory {flow.trajectory} not a consistent length."
             )
 
+        self.ensemble_names.append(flow.ensemble)
         self.trajectories.append(flow.trajectory)
         self.Eps.append(flow.Eps)
         self.Ecs.append(flow.Ecs)
@@ -70,6 +72,7 @@ class FlowEnsemble:
         """
         Turn the lists of data into Numpy arrays for faster operations.
         """
+        self.ensemble_names = asarray(self.ensemble_names)
         self.trajectories = asarray(self.trajectories)
         self.times = asarray(self.times)
         self.Eps = asarray(self.Eps)
@@ -77,6 +80,12 @@ class FlowEnsemble:
         self.Qs = asarray(self.Qs)
 
         self._frozen = True
+
+    def group(self, observable):
+        return [
+            observable[self.ensemble_names == ensemble_name]
+            for ensemble_name in sorted(set(self.ensemble_names))
+        ]
 
     def Q_history(self, t="L/2"):
         """
@@ -134,8 +143,9 @@ class Flow:
     Represents the data from the gradient flow for a single configuration.
     """
 
-    def __init__(self, trajectory=None):
+    def __init__(self, trajectory=None, ensemble=None):
         self.trajectory = trajectory
+        self.ensemble = ensemble
         self.Eps = []
         self.Ecs = []
         self.times = []
