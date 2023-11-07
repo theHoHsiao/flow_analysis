@@ -2,7 +2,7 @@
 
 import warnings
 
-from numpy import argmax, nan
+from numpy import argmax
 
 from ..stats.bootstrap import (
     bootstrap_finalize,

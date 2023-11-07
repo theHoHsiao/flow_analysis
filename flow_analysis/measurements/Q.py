@@ -94,7 +94,7 @@ def Q_fit(flow_ensemble, with_amplitude=False):
 
 def main():
     from argparse import ArgumentParser
-    from ..readers import read_flows_hirep
+    from ..readers import readers
 
     parser = ArgumentParser()
     parser.add_argument("filename")

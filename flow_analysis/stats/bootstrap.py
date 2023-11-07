@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from numpy import ndarray, mean, std, arccosh, asarray, empty
+from numpy import mean, std, asarray, empty
 from numpy.random import default_rng
 
 from uncertainties import ufloat
