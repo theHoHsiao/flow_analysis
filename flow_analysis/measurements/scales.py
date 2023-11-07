@@ -4,7 +4,11 @@ import warnings
 
 from numpy import argmax, nan
 
-from ..stats.bootstrap import bootstrap_finalize, bootstrap_finalize_Nd, sample_bootstrap_1d
+from ..stats.bootstrap import (
+    bootstrap_finalize,
+    bootstrap_finalize_Nd,
+    sample_bootstrap_1d,
+)
 
 
 def _threshold_interpolate(flow_ensemble, values, threshold):

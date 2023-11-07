@@ -80,7 +80,9 @@ def Q_fit(flow_ensemble, with_amplitude=False):
     """
 
     Q_range, Q_counts = flat_bin_Qs(flow_ensemble.Q_history())
-    popt, pcov = curve_fit(gaussian, Q_range, Q_counts, sigma=(Q_counts + 1) ** 0.5, absolute_sigma=True)
+    popt, pcov = curve_fit(
+        gaussian, Q_range, Q_counts, sigma=(Q_counts + 1) ** 0.5, absolute_sigma=True
+    )
 
     A, Q0, sigma = map(ufloat, popt, pcov.diagonal() ** 0.5)
 

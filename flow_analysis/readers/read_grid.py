@@ -31,7 +31,11 @@ def read_flows_grid(filename):
             if len(line_contents) < 8:
                 continue
 
-            if len(line_contents) > 8 and line_contents[8] == "Configuration" and line_contents[-1] == "agree":
+            if (
+                len(line_contents) > 8
+                and line_contents[8] == "Configuration"
+                and line_contents[-1] == "agree"
+            ):
                 if flow:
                     flows.append(flow)
 
@@ -46,11 +50,11 @@ def read_flows_grid(filename):
             if line_contents[8:11] == ["Energy", "density", "(plaq)"]:
                 Ep_idx = int(line_contents[12])
                 flow_time = float(line_contents[13])
-                Ep = float(line_contents[14]) / flow_time ** 2
+                Ep = float(line_contents[14]) / flow_time**2
             elif line_contents[8:11] == ["Energy", "density", "(cloverleaf)"]:
                 Ec_idx = int(line_contents[12])
                 flow_time = float(line_contents[13])
-                Ec = float(line_contents[14]) / flow_time ** 2
+                Ec = float(line_contents[14]) / flow_time**2
             elif line_contents[8:10] == ["Top.", "charge"]:
                 Q_idx = int(line_contents[11])
                 Q = float(line_contents[12])
