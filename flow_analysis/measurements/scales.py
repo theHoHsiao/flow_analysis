@@ -11,7 +11,7 @@ from ..stats.bootstrap import (
 )
 
 
-def _threshold_interpolate(flow_ensemble, values, threshold):
+def threshold_interpolate(flow_ensemble, values, threshold):
     """
     Find at what time a series of values crosses a given threshold for the first time,
     interpolating where this is between points.
@@ -93,7 +93,7 @@ def bootstrap_ensemble_sqrt_8t0(flow_ensemble, E0, operator="sym"):
                   Default: sym.
     """
     t2E = compute_t2E_samples(flow_ensemble, operator)
-    return (8 * _threshold_interpolate(flow_ensemble, t2E, E0)) ** 0.5
+    return (8 * threshold_interpolate(flow_ensemble, t2E, E0)) ** 0.5
 
 
 def measure_sqrt_8t0(flow_ensemble, E0, operator="sym"):
@@ -171,7 +171,7 @@ def bootstrap_ensemble_w0(flow_ensemble, W0, operator="sym"):
     """
 
     t_dt2E_dt = compute_wt_samples(flow_ensemble, operator)
-    return _threshold_interpolate(flow_ensemble, t_dt2E_dt, W0) ** 0.5
+    return threshold_interpolate(flow_ensemble, t_dt2E_dt, W0) ** 0.5
 
 
 def measure_w0(flow_ensemble, W0, operator="sym"):
