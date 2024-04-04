@@ -36,7 +36,7 @@ def parse_cfg_filename(filename):
     )
     if not matched_filename:
         matched_filename = match(
-            r".*/(?:(run[^/]*)/)?cnfg/ckpoint_lat.([0-9]+)", filename
+            r".*?/(?:(run[^/]*)/)?(?:cnfg/)?ckpoint_lat.([0-9]+)", filename
         )
 
     run_name, cfg_index = matched_filename.groups()
