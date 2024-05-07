@@ -79,9 +79,23 @@ def Q_fit(flow_ensemble, with_amplitude=False):
         flow_ensemble: A frozen FlowEnsemble instance.
     """
 
-    Q_range, Q_counts = flat_bin_Qs(flow_ensemble.Q_history())
+    Q_history = flow_ensemble.Q_history()
+
+    Q_range, Q_counts = flat_bin_Qs(Q_history)
+
+    # Estimate a sensible starting point for the fit
+    # so it doesn't give up if the peak is a long way away from the default
+    Q_mean = Q_history.mean()
+    Q_std = Q_history.std()
+    Q_amplitude = Q_counts.max()
+
     popt, pcov = curve_fit(
-        gaussian, Q_range, Q_counts, sigma=(Q_counts + 1) ** 0.5, absolute_sigma=True
+        gaussian,
+        Q_range,
+        Q_counts,
+        sigma=(Q_counts + 1) ** 0.5,
+        p0=[Q_amplitude, Q_mean, Q_std],
+        absolute_sigma=True,
     )
 
     A, Q0, sigma = map(ufloat, popt, pcov.diagonal() ** 0.5)
