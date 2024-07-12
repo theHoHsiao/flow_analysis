@@ -8,6 +8,8 @@ from collections import namedtuple
 from numpy import asarray
 from numpy.random import default_rng
 
+import pyerrors as pe
+
 
 class FlowEnsemble:
     """
@@ -95,7 +97,7 @@ class FlowEnsemble:
 
             t: The flow time at which Q is measured.
                If "L/2" is passed (the default), then the relation
-               \sqrt{8t} ≤ L / 2 is used to determine t.
+               \\sqrt{8t} ≤ L / 2 is used to determine t.
         """
         if t == "L/2":
             L = min(self.metadata["NX"], self.metadata["NY"], self.metadata["NZ"])
@@ -137,13 +139,50 @@ class FlowEnsemble:
                 f"Invalid operator {operator}. " 'Valid operators are "plaq" and "sym".'
             )
 
+    def get_Es_pyerrors(self, operator, tag=None):
+        """
+        Get a pyerrors object encapsulating the ensemble of energy density computations
+        for a a given operator.
+
+        Arguments:
+            operator: The operator for E to use.
+                      Valid options are "plaq" and "sym".
+        """
+
+        Es = self.get_Es(operator)
+        all_samples = [[] for _ in range(len(self.times))]
+        ensemble_names = sorted(set(self.ensemble_names))
+        sample_idxs = []
+
+        for ensemble_name in ensemble_names:
+            subset_idx = self.ensemble_names == ensemble_name
+            ensemble_subset = Es[subset_idx]
+            trajectories_subset = self.trajectories[subset_idx]
+            for samples in all_samples:
+                samples.append([])
+
+            sample_idxs.append([])
+            for trajectory, flow in zip(trajectories_subset, ensemble_subset):
+                sample_idxs[-1].append(trajectory)
+                for samples, E_value in zip(all_samples, flow):
+                    samples[-1].append(E_value)
+
+        observables = [
+            pe.Obs(samples, ensemble_names, idl=sample_idxs) for samples in all_samples
+        ]
+
+        E_flows_pe = pe.Corr(observables)
+        E_flows_pe.tag = tag
+
+        return E_flows_pe
+
 
 class Flow:
     """
     Represents the data from the gradient flow for a single configuration.
     """
 
-    def __init__(self, trajectory=None, ensemble=None):
+    def __init__(self, trajectory=None, ensemble=""):
         self.trajectory = trajectory
         self.ensemble = ensemble
         self.Eps = []
