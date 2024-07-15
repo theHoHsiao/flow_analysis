@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from functools import lru_cache
-from re import match
 
 from ..flow import FlowStep, Flow, FlowEnsemble
 
@@ -20,7 +19,10 @@ def read_flows_hp(filename):
             flow_time, Ep, Ec = map(float, line_contents[1:])
 
             if previous_line_flow_time is None or flow_time < previous_line_flow_time:
-                if previous_line_trajectory and previous_line_trajectory != trajectory - 1:
+                if (
+                    previous_line_trajectory
+                    and previous_line_trajectory != trajectory - 1
+                ):
                     raise ValueError("Configuration indices don't increment nicely.")
                 if flow:
                     flows.append(flow)
