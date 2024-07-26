@@ -18,9 +18,10 @@ class FlowEnsemble:
 
     _frozen = False
 
-    def __init__(self, filename):
+    def __init__(self, filename, reader=None):
         self.ensemble_names = []
         self.trajectories = []
+        self.reader = reader
         self.Eps = []
         self.Ecs = []
         self.times = None

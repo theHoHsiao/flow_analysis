@@ -47,7 +47,7 @@ def parse_cfg_filename(filename):
 
 @lru_cache(maxsize=8)
 def read_flows_grid(filename):
-    flows = FlowEnsemble(filename)
+    flows = FlowEnsemble(filename, "grid")
     flow = None
     Ep_idx = None
     Ec_idx = None

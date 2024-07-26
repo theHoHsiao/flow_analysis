@@ -7,7 +7,7 @@ from ..flow import FlowStep, Flow, FlowEnsemble
 
 @lru_cache(maxsize=8)
 def read_flows_hp(filename):
-    flows = FlowEnsemble(filename)
+    flows = FlowEnsemble(filename, "hp")
     flow = None
     previous_line_trajectory = None
     previous_line_flow_time = None

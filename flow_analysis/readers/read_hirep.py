@@ -44,12 +44,14 @@ def parse_cfg_filename(filename):
 
 @lru_cache(maxsize=8)
 def read_flows_hirep(filename):
-    flows = FlowEnsemble(filename)
+    flows = FlowEnsemble(filename, "hirep")
     flow = None
 
     with open(filename) as f:
         for line in f.readlines():
             line_contents = line.split()
+            if not line_contents:
+                continue
 
             if (
                 line_contents[0] == "[IO][0]Configuration"
@@ -78,6 +80,9 @@ def read_flows_hirep(filename):
             Q = float(line_contents[8])
 
             flow.append(FlowStep(flow_time, Ep, Ec, Q))
+
+    if flow is None:
+        return
 
     flows.append(flow)
     flows.freeze()
