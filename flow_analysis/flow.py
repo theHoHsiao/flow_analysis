@@ -3,7 +3,7 @@
 import hashlib
 from os.path import basename
 
-from collections import namedtuple
+from collections import Counter, namedtuple
 
 from numpy import asarray
 from numpy.random import default_rng
@@ -158,6 +158,14 @@ class FlowEnsemble:
             subset_idx = self.ensemble_names == ensemble_name
             ensemble_subset = Es[subset_idx]
             trajectories_subset = self.trajectories[subset_idx]
+            if len(set(trajectories_subset)) != len(trajectories_subset):
+                counts = Counter(trajectories_subset)
+                duplicate_trajectories = [
+                    index for index, count in counts.items() if count > 1
+                ]
+                message = f"Can't make a pyerrors object for the ensemble {self.filename} as there are duplicate trajectories: {duplicate_trajectories}"
+                raise ValueError(message)
+
             for samples in all_samples:
                 samples.append([])
 
