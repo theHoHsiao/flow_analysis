@@ -84,6 +84,35 @@ class FlowEnsemble:
 
         self._frozen = True
 
+    def thin(self, min_trajectory=None, max_trajectory=None, trajectory_step=1):
+        """
+        Thin an ensemble to decorrelate it.
+        """
+        if not self._frozen:
+            raise NotImplementedError(
+                "Thinning an unfrozen ensemble isn't currently supported"
+            )
+
+        mask = (
+            (self.trajectories > min_trajectory if min_trajectory is not None else True)
+            & (
+                self.trajectories < max_trajectory
+                if max_trajectory is not None
+                else True
+            )
+            & (self.trajectories % trajectory_step == 0)
+        )
+        result = FlowEnsemble(self.filename, self.reader)
+        result.ensemble_names = self.ensemble_names[mask]
+        result.trajectories = self.trajectories[mask]
+        result.times = self.times
+        result.Eps = self.Eps[mask, :]
+        result.Ecs = self.Ecs[mask, :]
+        result.Qs = self.Qs[mask, :]
+        result._frozen = True
+
+        return result
+
     def group(self, observable):
         return [
             observable[self.ensemble_names == ensemble_name]
