@@ -110,6 +110,7 @@ class FlowEnsemble:
         result.Ecs = self.Ecs[mask, :]
         result.Qs = self.Qs[mask, :]
         result._frozen = True
+        result.metadata = self.metadata
 
         return result
 
