@@ -100,7 +100,11 @@ class FlowEnsemble:
                 if max_trajectory is not None
                 else True
             )
-            & (self.trajectories % trajectory_step == 0)
+            & (
+                (self.trajectories - (min_trajectory if min_trajectory else 0))
+                % trajectory_step
+                == 0
+            )
         )
         result = FlowEnsemble(self.filename, self.reader)
         result.ensemble_names = self.ensemble_names[mask]
