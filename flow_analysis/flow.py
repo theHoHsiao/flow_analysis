@@ -26,6 +26,8 @@ class FlowEnsemble:
         self.Ecs = []
         self.times = None
         self.Qs = []
+        self.cfg_filenames = []
+        self.plaquettes = []
         self.metadata = {}
         self.filename = filename
 
@@ -71,6 +73,20 @@ class FlowEnsemble:
         self.Ecs.append(flow.Ecs)
         self.Qs.append(flow.Qs)
 
+        if flow.plaquette is None:
+            if self.plaquettes:
+                raise ValueError("Some flows have plaquettes and others don't.")
+            self.plaquettes = None
+        self.plaquettes.append(flow.plaquette)
+
+        if flow.cfg_filename is None:
+            if self.cfg_filenames:
+                raise ValueError(
+                    "Some flows have configuration filenames and others don't."
+                )
+            self.cfg_filenames = None
+        self.cfg_filenames.append(flow.cfg_filename)
+
     def freeze(self):
         """
         Turn the lists of data into Numpy arrays for faster operations.
@@ -81,6 +97,10 @@ class FlowEnsemble:
         self.Eps = asarray(self.Eps)
         self.Ecs = asarray(self.Ecs)
         self.Qs = asarray(self.Qs)
+        if self.plaquettes:
+            self.plaquettes = asarray(self.plaquettes)
+        if self.cfg_filenames:
+            self.cfg_filenames = asarray(self.cfg_filenames)
 
         self._frozen = True
 
@@ -225,9 +245,11 @@ class Flow:
     Represents the data from the gradient flow for a single configuration.
     """
 
-    def __init__(self, trajectory=None, ensemble=""):
+    def __init__(self, trajectory=None, ensemble="", cfg_filename=None, plaquette=None):
         self.trajectory = trajectory
         self.ensemble = ensemble
+        self.cfg_filename = cfg_filename
+        self.plaquette = plaquette
         self.Eps = []
         self.Ecs = []
         self.times = []

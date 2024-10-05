@@ -43,9 +43,10 @@ def parse_cfg_filename(filename):
 
 
 @lru_cache(maxsize=8)
-def read_flows_hirep(filename):
+def read_flows_hirep(filename, metadata_callback=lambda metadata, line: None):
     flows = FlowEnsemble(filename, "hirep")
     flow = None
+    flows.metadata["flow_type"] = "Wilson"
 
     with open(filename) as f:
         for line in f.readlines():
@@ -61,9 +62,15 @@ def read_flows_hirep(filename):
                     flows.append(flow)
 
                 ensemble, trajectory = parse_cfg_filename(line_contents[1])
-                flow = Flow(trajectory=trajectory, ensemble=ensemble)
+                flow = Flow(
+                    trajectory=trajectory,
+                    ensemble=ensemble,
+                    plaquette=float(line_contents[-1].split("=")[-1]),
+                    cfg_filename=line_contents[1].strip("[]"),
+                )
 
             add_metadata(flows.metadata, line_contents)
+            metadata_callback(flows.metadata, line_contents)
 
             if line_contents[0] != "[WILSONFLOW][0]WF":
                 continue
