@@ -153,7 +153,7 @@ def compute_wt_t(flow_ensemble, operator="sym"):
         Arrys of errors of the mean of the derivative
     """
 
-    wt_samples = compute_wt_samples(flow_ensemble, operator="sym")
+    wt_samples = compute_wt_samples(flow_ensemble, operator=operator)
     return bootstrap_finalize_Nd(wt_samples, axis=0)
 
 
