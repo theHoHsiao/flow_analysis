@@ -83,10 +83,10 @@ def compute_t2E_t(flow_ensemble, operator="sym"):
 def bootstrap_ensemble_sqrt_8t0(flow_ensemble, E0, operator="sym"):
     """
     Generate a set of bootstrap samples for an ensemble, and
-    compute \sqrt{8t_0} for each sample.
+    compute \\sqrt{8t_0} for each sample.
 
     Arguments:
-        flow_ensemble: The FlowEnsemble to evaluate \sqrt{8t_0} for.
+        flow_ensemble: The FlowEnsemble to evaluate \\sqrt{8t_0} for.
         E0: The threshold value E0 to solve for.
         operator: The operator for E to use.
                   Valid options are "plaq" and "sym".
@@ -98,10 +98,10 @@ def bootstrap_ensemble_sqrt_8t0(flow_ensemble, E0, operator="sym"):
 
 def measure_sqrt_8t0(flow_ensemble, E0, operator="sym"):
     """
-    Compute the ensemble average of \sqrt{8t0}.
+    Compute the ensemble average of \\sqrt{8t0}.
 
     Arguments:
-        flow_ensemble: The FlowEnsemble to evaluate \sqrt{8t_0} for.
+        flow_ensemble: The FlowEnsemble to evaluate \\sqrt{8t_0} for.
         E0: The threshold value E0 to solve for.
         operator: The operator for E to use.
                   Valid options are "plaq" and "sym".
