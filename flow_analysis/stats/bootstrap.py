@@ -19,12 +19,16 @@ def bootstrap_finalize_Nd(samples, axis=None):
     return mean(samples, axis=axis), std(samples, axis=axis)
 
 
-def basic_bootstrap(values, rng=DEFAULT_RNG):
+def sample_bootstrap_0d(values, rng=DEFAULT_RNG):
     values = asarray(values)
     samples = []
     for _ in range(BOOTSTRAP_SAMPLE_COUNT):
         samples.append(mean(rng.choice(values, len(values))))
-    return bootstrap_finalize(samples)
+    return asarray(samples)
+
+
+def basic_bootstrap(values, rng=DEFAULT_RNG):
+    return bootstrap_finalize(sample_bootstrap_0d(values, rng))
 
 
 def bootstrap_susceptibility(values, rng=DEFAULT_RNG):
