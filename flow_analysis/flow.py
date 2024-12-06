@@ -97,9 +97,9 @@ class FlowEnsemble:
         self.Eps = asarray(self.Eps)
         self.Ecs = asarray(self.Ecs)
         self.Qs = asarray(self.Qs)
-        if self.plaquettes:
+        if len(self.plaquettes) > 0:
             self.plaquettes = asarray(self.plaquettes)
-        if self.cfg_filenames:
+        if len(self.cfg_filenames) > 0:
             self.cfg_filenames = asarray(self.cfg_filenames)
 
         self._frozen = True
