@@ -50,6 +50,8 @@ def read_flows_hirep(filename):
     with open(filename) as f:
         for line in f.readlines():
             line_contents = line.split()
+            if not line_contents:
+                continue
 
             if (
                 line_contents[0] == "[IO][0]Configuration"
