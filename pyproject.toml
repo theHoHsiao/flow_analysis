@@ -14,6 +14,14 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "numpy",
+    "scipy",
+    "uncertainties",
+]
+
+[project.optional-dependencies]
+hdf5 = ["h5py"]
 
 [project.urls]
 "Homepage" = "https://github.com/edbennett/flow_analysis"
