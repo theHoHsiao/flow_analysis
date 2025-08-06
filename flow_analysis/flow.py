@@ -77,7 +77,8 @@ class FlowEnsemble:
             if self.plaquettes:
                 raise ValueError("Some flows have plaquettes and others don't.")
             self.plaquettes = None
-        self.plaquettes.append(flow.plaquette)
+        else:
+            self.plaquettes.append(flow.plaquette)
 
         if flow.cfg_filename is None:
             if self.cfg_filenames:
@@ -85,7 +86,8 @@ class FlowEnsemble:
                     "Some flows have configuration filenames and others don't."
                 )
             self.cfg_filenames = None
-        self.cfg_filenames.append(flow.cfg_filename)
+        else:
+            self.cfg_filenames.append(flow.cfg_filename)
 
     def freeze(self):
         """
