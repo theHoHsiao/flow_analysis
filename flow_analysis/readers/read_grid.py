@@ -51,6 +51,8 @@ def read_flows_grid(filename):
     flow = None
     Ep_idx = None
     Ec_idx = None
+    Ep = None
+    Ec = None
     Q_idx = None
 
     with open(filename) as f:
