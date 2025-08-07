@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-import h5py
+try:
+    import h5py
+except ImportError:
+    h5py = None
 
 from ..flow import FlowEnsemble
 
@@ -13,6 +16,9 @@ def get_metadata(group):
 
 
 def read_flows_hdf5(filename, group_name="/"):
+    if h5py is None:
+        raise ImportError("h5py is not installed")
+
     h5file = h5py.File(filename, "r")
     group = h5file[group_name]
 

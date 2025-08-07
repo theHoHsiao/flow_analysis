@@ -22,6 +22,7 @@ dependencies = [
 
 [project.optional-dependencies]
 hdf5 = ["h5py"]
+pyerrors = ["pyerrors"]
 
 [project.urls]
 "Homepage" = "https://github.com/edbennett/flow_analysis"

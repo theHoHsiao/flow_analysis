@@ -8,7 +8,10 @@ from collections import Counter, namedtuple
 from numpy import asarray
 from numpy.random import default_rng
 
-import pyerrors as pe
+try:
+    import pyerrors as pe
+except ImportError:
+    pyerrors = None
 
 
 class FlowEnsemble:
@@ -205,6 +208,9 @@ class FlowEnsemble:
             operator: The operator for E to use.
                       Valid options are "plaq" and "sym".
         """
+
+        if pyerrors is None:
+            raise ImportError("pyerrors is not installed")
 
         Es = self.get_Es(operator)
         all_samples = [[] for _ in range(len(self.times))]
