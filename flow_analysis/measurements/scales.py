@@ -45,7 +45,7 @@ def threshold_interpolate(flow_ensemble, values, threshold):
 def compute_t2E_samples(flow_ensemble, operator="sym"):
     """
     Generate a set of bootstrap samples for an ensemble, and
-    compute \mathcal{E}(t) = t^2 E for each sample.
+    compute \\mathcal{E}(t) = t^2 E for each sample.
 
     Arguments:
         flow_ensemble: The FlowEnsemble to evaluate for.
@@ -61,7 +61,7 @@ def compute_t2E_samples(flow_ensemble, operator="sym"):
 
 def compute_t2E_t(flow_ensemble, operator="sym"):
     """
-    Compute the mean and error of \mathcal{E}(t) = t^2 E
+    Compute the mean and error of \\mathcal{E}(t) = t^2 E
     as a function of t.
 
     Arguments:
