@@ -7,24 +7,28 @@ from scipy.optimize import curve_fit
 
 from uncertainties import ufloat
 
+from ..flow import FlowEnsemble
 from ..fit_forms import gaussian
 from ..stats.autocorrelation import exp_autocorrelation_fit
 from ..stats.bootstrap import basic_bootstrap, bootstrap_susceptibility
 
 
-def Q_mean(flow_ensemble):
+def Q_mean(flow_ensemble, t="L/2"):
     """
     Compute the mean and bootstrap error Q of an ensemble.
 
     Arguments:
 
         flow_ensemble: A frozen FlowEnsemble instance.
+        t: The flow time at which Q is measured.
+           If "L/2" is passed (the default), then the relation
+           \\sqrt{8t} ≤ L / 2 is used to determine t.
     """
 
-    return basic_bootstrap(flow_ensemble.Q_history(), rng=flow_ensemble.get_rng())
+    return basic_bootstrap(flow_ensemble.Q_history(t), rng=flow_ensemble.get_rng())
 
 
-def Q_susceptibility(flow_ensemble):
+def Q_susceptibility(flow_ensemble, t="L/2"):
     """
     Compute the mean and bootstrap error of the naive
     topological susceptibility of an ensemble.
@@ -32,30 +36,44 @@ def Q_susceptibility(flow_ensemble):
     Arguments:
 
         flow_ensemble: A frozen FlowEnsemble instance.
+        t: The flow time at which Q is measured.
+           If "L/2" is passed (the default), then the relation
+           \\sqrt{8t} ≤ L / 2 is used to determine t.
     """
 
     metadata = flow_ensemble.metadata
     V = metadata["NX"] * metadata["NY"] * metadata["NZ"] * metadata["NT"]
     unnorm_suscept = bootstrap_susceptibility(
-        flow_ensemble.Q_history(), rng=flow_ensemble.get_rng()
+        flow_ensemble.Q_history(t), rng=flow_ensemble.get_rng()
     )
     return unnorm_suscept / V
 
 
-def flat_bin_Qs(Q_history):
+def flat_bin_Qs(Q_history, t=None):
     """
     Given a Monte Carlo time history of Q values,
     bin them to integers.
 
     Arguments:
 
-        Q_history: A list/1D array of Q values.
+        Q_history: A list/1D array of Q values, or a FlowEnsemble.
+        t: The flow time at which Q is measured.
+           If "L/2" is passed (the default), then the relation
+           \\sqrt{8t} ≤ L / 2 is used to determine t.
+           Only allowed if Q_history is a FlowEnsemble.
 
     Returns:
 
         Q_range: a list of values of Q
         Q_counts: a list of counts of each value of Q
     """
+
+    if isinstance(Q_history, FlowEnsemble):
+        if t is None:
+            t = "L/2"
+        Q_history = Q_history.Q_history(t)
+    elif t is not None:
+        raise ValueError("Cannot recompute Q at a different flow time.")
 
     Q_bins = Counter(Q_history.round())
 
@@ -69,7 +87,7 @@ def flat_bin_Qs(Q_history):
     return Q_range, Q_counts
 
 
-def Q_fit(flow_ensemble, with_amplitude=False):
+def Q_fit(flow_ensemble, t="L/2", with_amplitude=False):
     """
     Fit a Gaussian to the topological charge distribution of an ensemble,
     and return its estimated centre and width.
@@ -77,9 +95,12 @@ def Q_fit(flow_ensemble, with_amplitude=False):
     Arguments:
 
         flow_ensemble: A frozen FlowEnsemble instance.
+        t: The flow time at which Q is measured.
+           If "L/2" is passed (the default), then the relation
+           \\sqrt{8t} ≤ L / 2 is used to determine t.
     """
 
-    Q_history = flow_ensemble.Q_history()
+    Q_history = flow_ensemble.Q_history(t)
 
     Q_range, Q_counts = flat_bin_Qs(Q_history)
 
