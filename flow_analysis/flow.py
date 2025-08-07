@@ -48,19 +48,21 @@ class FlowEnsemble:
         seed = abs(int.from_bytes(filename_hash, "big"))
         return default_rng(seed)
 
-    def append(self, flow):
+    def append(self, flow, check_consistency=True):
         """
         Append the flow for one configuration to the data for the ensemble.
 
         Arguments:
             flow: The instance of Flow to append.
+            check_consistency: Verify consistency between different configurations.
+                Unpredictable behaviour may ensue if these checks are disabled.
         """
         if self._frozen:
             raise TypeError("Can't append to a frozen ensemble.")
 
         if self.times is None:
             self.times = flow.times
-        elif flow.times != self.times:
+        elif check_consistency and flow.times != self.times:
             raise ValueError(
                 f"Times must match for all flows. (Failing at trajectory {flow.trajectory})"
             )
@@ -263,15 +265,17 @@ class Flow:
         self.times = []
         self.Qs = []
 
-    def append(self, flowstep):
+    def append(self, flowstep, check_consistency=True):
         """
         Append the data for one flow time step to the that for the configuration.
 
         Arguments:
             flowstep: The instance of FlowStep to append.
+            check_consistency: Verify consistency of a flow.
+                Unpredictable behaviour may ensue if these checks are disabled.
         """
 
-        if self.times and flowstep.t < self.times[-1]:
+        if check_consistency and self.times and flowstep.t < self.times[-1]:
             raise ValueError("Flow goes backwards.")
         else:
             self.times.append(flowstep.t)

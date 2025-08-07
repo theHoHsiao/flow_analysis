@@ -46,7 +46,7 @@ def parse_cfg_filename(filename):
 
 
 @lru_cache(maxsize=8)
-def read_flows_grid(filename):
+def read_flows_grid(filename, check_consistency=True):
     flows = FlowEnsemble(filename, "grid")
     flow = None
     Ep_idx = None
@@ -68,7 +68,7 @@ def read_flows_grid(filename):
                 and line_contents[-1] == "agree"
             ):
                 if flow:
-                    flows.append(flow)
+                    flows.append(flow, check_consistency=check_consistency)
 
                 ensemble, trajectory = parse_cfg_filename(line_contents[9])
                 flow = Flow(trajectory=trajectory, ensemble=ensemble)
@@ -91,11 +91,16 @@ def read_flows_grid(filename):
                 Q = float(line_contents[12])
 
             if (Ep_idx is not None or Ec_idx is not None) and Ep_idx == Q_idx:
-                flow.append(FlowStep(flow_time, Ep or nan, Ec or nan, Q))
+                flow.append(
+                    FlowStep(flow_time, Ep or nan, Ec or nan, Q),
+                    check_consistency=check_consistency,
+                )
                 Ep_idx = None
                 Ec_idx = None
                 Q_idx = None
 
-    flows.append(flow)
+    # Don't append incomplete flows at the end of a file
+    if len(flow.times) == len(flows.times):
+        flows.append(flow, check_consistency=check_consistency)
     flows.freeze()
     return flows
