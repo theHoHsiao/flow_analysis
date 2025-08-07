@@ -75,7 +75,7 @@ def read_flows_grid(filename, check_consistency=True):
 
             add_metadata(flows.metadata, line_contents)
 
-            if line_contents[7] != "[WilsonFlow]":
+            if line_contents[7] != "[WilsonFlow]" or len(line_contents) < 13:
                 continue
 
             if line_contents[8:11] == ["Energy", "density", "(plaq)"]:
