@@ -11,7 +11,7 @@ from numpy.random import default_rng
 try:
     import pyerrors as pe
 except ImportError:
-    pyerrors = None
+    pe = None
 
 
 class FlowEnsemble:
@@ -211,7 +211,7 @@ class FlowEnsemble:
                       Valid options are "plaq" and "sym".
         """
 
-        if pyerrors is None:
+        if pe is None:
             raise ImportError("pyerrors is not installed")
 
         Es = self.get_Es(operator)
