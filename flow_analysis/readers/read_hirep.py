@@ -35,7 +35,7 @@ def parse_cfg_filename(filename):
     """
 
     matched_filename = match(
-        r".*/([^/]*_[0-9]+x[0-9]+x[0-9]+x[0-9]+nc[0-9]+(?:r[A-Z]+)?(?:nf[0-9]+)?(?:b[0-9]+\.[0-9]+)?(?:m-?[0-9]+\.[0-9]+)?)n([0-9]+)",
+        r".*([^/]*_[0-9]+x[0-9]+x[0-9]+x[0-9]+nc[0-9]+(?:r[A-Z]+)?(?:nf[0-9]+)?(?:b[0-9]+\.[0-9]+)?(?:m-?[0-9]+\.[0-9]+)?)n([0-9]+)",
         filename,
     )
     run_name, cfg_index = matched_filename.groups()
@@ -43,7 +43,9 @@ def parse_cfg_filename(filename):
 
 
 @lru_cache(maxsize=8)
-def read_flows_hirep(filename, metadata_callback=lambda metadata, line: None):
+def read_flows_hirep(
+    filename, metadata_callback=lambda metadata, line: None, check_consistency=False
+):
     flows = FlowEnsemble(filename, "hirep")
     flow = None
     flows.metadata["flow_type"] = "Wilson"
@@ -59,7 +61,7 @@ def read_flows_hirep(filename, metadata_callback=lambda metadata, line: None):
                 and line_contents[2] == "read"
             ):
                 if flow:
-                    flows.append(flow)
+                    flows.append(flow, check_consistency=check_consistency)
 
                 ensemble, trajectory = parse_cfg_filename(line_contents[1])
                 flow = Flow(
@@ -86,11 +88,13 @@ def read_flows_hirep(filename, metadata_callback=lambda metadata, line: None):
             Ec = float(line_contents[6])
             Q = float(line_contents[8])
 
-            flow.append(FlowStep(flow_time, Ep, Ec, Q))
+            flow.append(
+                FlowStep(flow_time, Ep, Ec, Q), check_consistency=check_consistency
+            )
 
     if flow is None:
         return
 
-    flows.append(flow)
+    flows.append(flow, check_consistency=check_consistency)
     flows.freeze()
     return flows
