@@ -121,9 +121,9 @@ class FlowEnsemble:
             )
 
         mask = (
-            (self.trajectories > min_trajectory if min_trajectory is not None else True)
+            (self.trajectories >= min_trajectory if min_trajectory is not None else True)
             & (
-                self.trajectories < max_trajectory
+                self.trajectories <= max_trajectory
                 if max_trajectory is not None
                 else True
             )
